@@ -1,0 +1,21 @@
+
+
+
+Applictatioon Modules:
+    Cart:
+        ✔ cart-create @done (1/13/2023, 4:14:49 PM)
+
+        ✔ cart-update @done (1/13/2023, 4:14:54 PM)
+            fixes:
+                ☐ email should get updated as per customer payload
+        ✔ add-line-item @done (1/13/2023, 6:47:46 PM)
+            fixes:
+                ☐ add validatio if item exists
+
+
+    Customer:
+
+    Product:
+
+    Discounts:
+        
