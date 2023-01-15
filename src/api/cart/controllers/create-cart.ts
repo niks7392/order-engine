@@ -1,12 +1,14 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { Cart } from "../../../types/cart";
 import services from "../services";
+import regonServices from '../../region/services';
+import customerServices from '../../customer/services';
 
-export default async (req: Request, res: Response) => {
+export default async (req: Request, res: Response, next: NextFunction) => {
     try {
         let cart: Cart;
-        const {
-            region_id: region,
+        let {
+            region,
             country_code,
             customer
         } = req.body;
@@ -19,22 +21,26 @@ export default async (req: Request, res: Response) => {
             // TODO IMPILIMENT REGION CONTENT TYPE 
             // const {_id}:Region = await regionService.get(region) //checks wheter region id is valid or not 
             // if not then add any region to cart 
+            await regonServices.validateRegion(region);
+        } else {
+            //Create region if not provided
+            let regions = await regonServices.find();
+            console.log(regions);
+            region = regions[0]._id
+
         }
         if (customer) {
             // todo implimentation of user authentictation
+            await customerServices.validateCustomer(customer)
         }
         if (country_code) {
             // todo implimentation of user authentictation
         }
         cart = {
-            country_code, context
+            country_code, context, region, customer
         }
         return res.send(await services.save(cart))
     } catch (e: any) {
-        console.log(e);
-        if (e.name !== "ApplicationError") {
-            return res.sendStatus(500)
-        }
-        return res.send(e?.message || 'internal server error')
+        next(e)
     }
 }

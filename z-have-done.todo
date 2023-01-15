@@ -4,13 +4,24 @@
 Applictatioon Modules:
     Cart:
         ✔ cart-create @done (1/13/2023, 4:14:49 PM)
-
-        ✔ cart-update @done (1/13/2023, 4:14:54 PM)
+            fixes : 
+                ✔ cart should not get created with other total @done (1/15/2023, 12:20:32 PM)
+                ✔ if region is not provided add any associate any random region to the cart @done (1/15/2023, 12:21:31 PM)
+        ✔ cart-update @done (1/15/2023, 12:22:10 PM)
             fixes:
                 ☐ email should get updated as per customer payload
         ✔ add-line-item @done (1/13/2023, 6:47:46 PM)
             fixes:
-                ☐ add validatio if item exists
+                ✔ add validation if item exists with th cart @done (1/15/2023, 12:17:12 PM)
+                ☐ calculate total of each items in update the cart
+                ☐ validation that total and prices shouldnt get updated from api 
+        ✔ update-line-item @done (1/15/2023, 12:18:50 PM)
+            fixes:
+                 ☐ calculate total of each items in update the cart
+        ✔ delete-line-item @done (1/15/2023, 12:19:24 PM)
+            fixes:
+                 ☐ calculate total of each items in update the cart
+
 
 
     Customer:

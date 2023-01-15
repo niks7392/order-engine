@@ -25,8 +25,12 @@ export default async (req: Request, res: Response, next: NextFunction) => {
         let updatedShippingAddress: any;
         let updatedbillingAddress: any;
         // VALIDATING IF CUSTOMER AND REGIONIS IS VALID AND EXISTS 
-        await customerServices.validateCustomer(customer);
-        await regionServices.validateRegion(region);
+        if (customer) {
+            await customerServices.validateCustomer(customer);
+        }
+        if (region) {
+            await regionServices.validateRegion(region);
+        }
 
         // VALIIDATING IF CART ALREADY HAS SHIPPING ADDRESS
         if (isExists.shipping_address) {

@@ -26,8 +26,15 @@ const cartSchema: Schema = new mongoose.Schema({
     //     type: Array,
     // },
     items: [{
-        type: Schema.Types.ObjectId,
-        ref : 'variant',
+
+        item: {
+            type: Schema.Types.ObjectId,
+            ref: 'variant',
+        },
+        quantity: {
+            type: Number,
+            min : 0
+        }
     }],
     // items: [{
     //     type: Schema.Types.ObjectId,

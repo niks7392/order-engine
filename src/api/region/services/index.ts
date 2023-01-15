@@ -16,7 +16,7 @@ export default {
     async updateWithId(_id: Types.ObjectId | string, payload: Region) {
         return await region.findOneAndUpdate({ _id }, payload, { new: true })
     },
-    async find(payload: Region) {
+    async find(payload?: Region|any) {
         return await region.find(payload)
     },
     async validateRegion(id: string) {

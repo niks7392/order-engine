@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import ApplicationError from "../../../utils/ApplicationError";
 import services from "../services";
+import itemServices from '../../item/services'
 
 export default {
     async create(req: Request, res: Response, next: NextFunction) {
@@ -21,27 +22,12 @@ export default {
                 original_tax,
                 calculated_tax,
                 tax_rates } = req.body;
+            // WHEN CREATING VARIANTS ITS REQUIRED TO HAVE ITEM_ID AS ITEM IN REQ.BODY 
+            if (!item) {
+                throw new ApplicationError('item id is required parameter as item in body');
+            }
+            await itemServices.validateItem(item);
 
-            // const create = services.create({
-            //     title,
-            //     product,
-            //     prices,
-            //     sku,
-            //     inventory_quantity,
-            //     origin_country,
-            //     material,
-            //     created_at,
-            //     updated_at,
-            //     deleted_at,
-            //     metadata,
-            //     original_price,
-            //     calculated_price,
-            //     original_price_incl_tax,
-            //     calculated_price_incl_tax,
-            //     original_tax,
-            //     calculated_tax,
-            //     tax_rates
-            // });
             const created = await services.save({
                 title,
                 item,
@@ -59,6 +45,7 @@ export default {
                 calculated_tax,
                 tax_rates
             });
+            await itemServices.pushVariant(item, created._id)
             res.send(created)
         } catch (e) {
             next(e)
