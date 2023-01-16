@@ -6,7 +6,9 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id, line_id } = req.params;
         const { quantity } = req.body;
-        if (!quantity) throw new ApplicationError(`quantity in body is required to update item`)
+        // console.log(quantity);
+        if (quantity===undefined) throw new ApplicationError(`quantity in body is required to update item`);
+        if(quantity===0 || quantity<0)throw new ApplicationError(`parameter quantity cannot be 0 or in negative`);
         if (!id || !line_id) {
             throw new ApplicationError(`id and line_id both are required parameter to update line item`)
         }

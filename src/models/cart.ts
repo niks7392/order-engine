@@ -8,9 +8,9 @@ const cartSchema: Schema = new mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref: 'region'
     },
-    country_code: [{
+    country_code: {
         type: String,
-    }],
+    },
     billing_address: {
         type: Schema.Types.ObjectId,
         ref: 'billing_address'

@@ -48,8 +48,9 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
 
         // VLIDATION CHECK FOR SHIPPING_ADDRESS
+        await services.ensureCartTotal(id);
         return res.send(await services.updateWithId(id, {
-            region, customer, shipping_address: updatedShippingAddress._id, billing_address: updatedbillingAddress._id, context
+            region, customer, shipping_address: updatedShippingAddress._id, billing_address: updatedbillingAddress._id, context, country_code
         }))
     } catch (e) {
         next(e)

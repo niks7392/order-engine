@@ -26,6 +26,8 @@ export default {
         }
         return isItem
     },
+
+    // TODO:  VARIANT SHOULDNT GET PUSHED LIKE THIS NOT A PROPER WAY USE MODEL.UPDATEONE
     async pushVariant(_id:  Types.ObjectId|string, variant: string|Types.ObjectId) {
         return await  item.findOne({ _id }, async (err: CallbackError, document: any) => {
             if (err) {

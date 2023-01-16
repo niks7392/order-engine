@@ -1,4 +1,5 @@
 import { Document, MongooseError, Types } from "mongoose";
+import path from "path";
 import cart from "../../../models/cart";
 import { Cart } from "../../../types/cart";
 import ApplicationError from "../../../utils/ApplicationError";
@@ -90,7 +91,33 @@ export default {
         await cart.updateOne({_id:cart_id, "items._id":line_id}, {$pull:{items:{_id:line_id}}})
     },
     async ensureCartTotal(_id:string|Types.ObjectId){
-
+        let entity:any = await cart.findById(_id).populate('items.item')
+        let itemsWithTotal = this.createTotalForItems(entity.items)
+        // console.log(itemsWithTotal);
+        // console.log(itemsWithTotal);
+        
+        let grandTotal = itemsWithTotal?.reduce((prev:any, curr:any)=>{
+            // console.log(prev);
+            return  prev.total+ curr.total
+        });
+        // console.log(entity.items);
+        console.log(grandTotal);
+        
+        // let  updated = await cart.findByIdAndUpdate(_id, {
+        //     total : grandTotal
+        // });
+        // if(!updated){
+        //     throw new ApplicationError(`error on line 103 of ${path.join(__filename, '.')}`)
+        // }
+    },
+    createTotalForItems(items?:[]|any){
+        let newItems =  items?.map((item:any)=>{
+            // console.log(item.quantity);
+            // console.log(item);
+            return {...item, total : item.item.original_price * item.quantity }
+        })
+        return newItems
+        
     }
 }
 

@@ -1,5 +1,12 @@
 
 
+Applictatioon Authenctication Modules:
+    Customer:
+        ☐ Create Authenctication for customer (sha-256)
+
+    Admin:
+        ☐ Create Authenctication for admin(sha-256)
+
 
 Applictatioon Modules:
     Cart:
@@ -20,7 +27,7 @@ Applictatioon Modules:
                  ☐ calculate total of each items in update the cart
         ✔ delete-line-item @done (1/15/2023, 12:19:24 PM)
             fixes:
-                 ☐ calculate total of each items in update the cart
+                 ☐ calculate total of each items in any  requests that are updating  the cart @critical 
 
 
 
@@ -29,4 +36,7 @@ Applictatioon Modules:
     Product:
 
     Discounts:
+
+    Billing_Address:
+        ✔ create, read, update, delete routes proper @done (1/16/2023, 5:05:09 PM)
         

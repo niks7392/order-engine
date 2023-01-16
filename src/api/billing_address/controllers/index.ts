@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import ApplicationError from "../../../utils/ApplicationError";
 import services from "../services";
 
@@ -54,15 +54,27 @@ export default {
     async find(req: Request, res: Response) {
         try {
             const { query } = req;
-            return res.send(await services.find(query))
+            return res.send(await services.find(query, 'customer'))
         } catch (e) {
             return res.status(500).send('internal server error')
         }
     },
-    findOne(req: Request, res: Response) {
-        res.send(req.path)
+    async findOne(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { id } = req.params;
+            return res.send(await services.findOne({ _id: id }, 'customer'));
+        } catch (e) {
+            next(e)
+        }
     },
-    delete(req: Request, res: Response) {
-        res.send(req.path)
+    async delete(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { id } = req.params;
+            let isExists = await services.findOne({ _id: id })
+            if(!isExists)throw new ApplicationError(`billing_address with ${id} not found`)
+            return res.send(await services.delete(id))
+        } catch (e) {
+            next(e)
+        }
     }
 }
