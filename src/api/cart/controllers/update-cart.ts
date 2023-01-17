@@ -26,7 +26,9 @@ export default async (req: Request, res: Response, next: NextFunction) => {
         let updatedbillingAddress: any;
         // VALIDATING IF CUSTOMER AND REGIONIS IS VALID AND EXISTS 
         if (customer) {
-            await customerServices.validateCustomer(customer);
+            var { email } = await customerServices.validateCustomer(customer);
+            console.log(email);
+
         }
         if (region) {
             await regionServices.validateRegion(region);
@@ -49,9 +51,12 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
         // VLIDATION CHECK FOR SHIPPING_ADDRESS
         await services.ensureCartTotal(id);
-        return res.send(await services.updateWithId(id, {
-            region, customer, shipping_address: updatedShippingAddress._id, billing_address: updatedbillingAddress._id, context, country_code
-        }))
+        console.log(customer);
+        
+        let cart = await services.updateWithId(id, {
+            region, customer, shipping_address: updatedShippingAddress._id, billing_address: updatedbillingAddress._id, context, country_code, email
+        })
+        return res.send(cart)
     } catch (e) {
         next(e)
     }

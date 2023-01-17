@@ -27,7 +27,8 @@ Applictatioon Modules:
                  ☐ calculate total of each items in update the cart
         ✔ delete-line-item @done (1/15/2023, 12:19:24 PM)
             fixes:
-                 ☐ calculate total of each items in any  requests that are updating  the cart @critical 
+                 ✔ calculate total of each items in any  requests that are updating  the cart @critical @done (1/17/2023, 3:35:15 PM)
+                 ☐ calculate the total from mongoose aggregate pipeline @critical 
 
 
 

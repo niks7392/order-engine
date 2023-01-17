@@ -14,7 +14,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
         await services.validateLineId(id, line_id);
         await services.deleteVariantInCart(id, line_id);
         await services.ensureCartTotal(id)
-        res.send(await services.findOne({ _id: id }, true))
+        res.send(await services.findOne({ _id: id }, services.getRelations()))
     } catch (e) {
         console.log(e);
         

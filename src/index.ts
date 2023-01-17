@@ -8,10 +8,8 @@ import shippingRoutes from './api/shipping_address/routes';
 import itemRoutes from './api/item/routes'
 import variantRoutes from './api/variant/routes'
 import regionRoutes from './api/region/routes'
+import orderRoutes from './api/order/routes'
 import cart from './models/cart';
-import { MongooseError } from 'mongoose';
-import ApplicationError from './utils/ApplicationError';
-import item from './models/item';
 
 
 const port: number | any = process.env.PORT || 1337;
@@ -35,19 +33,67 @@ app.use('/api/billing_address', billingRoutes);
 app.use('/api/region', regionRoutes);
 app.use('/api/item', itemRoutes);
 app.use('/api/variant', variantRoutes);
+app.use('/api/order', orderRoutes)
 
 // JUST FOR TEST AND ONLY RUN IT IN DEVELOPMENT
-app.get('/test', async (req: Request, res: Response, next: NextFunction) => {
+app.get('/test/:id', async (req: Request, res: Response, next: NextFunction) => {
     try {
-        let { items }: any = await cart.findById("63bfc11ad57b897659f399a4", (err:MongooseError,doc:any)=>{
+        const { id } = req.params
+        // let itemsTotal = cart.aggregate([
+        //     { "$match": { _id: new Types.ObjectId(id) } },
+        //     // The following aggregation uses the $unwind stage to output a document for each element in the sizes array:
+        //     // $UNWINDREF https://www.mongodb.com/docs/manual/reference/operator/aggregation/unwind/
+        //     { "$unwind": "$items" },
+        //     {
+        //         "$lookup": {
+        //             // LOOKUP REF = https://www.mongodb.com/docs/manual/reference/operator/aggregation/lookup/
 
-            let arr = doc.items.map((element : any) => {
-                return {...element, total : element.item.original_price * element.quantity}
-            });
-            console.log(arr);
-            
-        }).populate("items.item").clone()
-        res.send('ne')
+        //             // LOOKING FOR CONNECTED COLLECTION  
+        //             from: "variants",
+        //             // LOOKING FOR THE FIELD THAT IS RELATING IN OUR CASE IN CARTSCHEMA FEILD ITEMS THAT IS AN ARRAY HAS ITEM WHICH CONTAINS ID THAT SAME ID BELONGS TO VARIANT  
+        //             localField: "items.item", // FIELD IN CART COLLECTION
+        //             // MATCHING THE LOCALFIELD SO WHERE _ID === FOREIGNFIELD WE ARE CATCHING THE ITEMS OF CART 
+        //             foreignField: "_id", // FIELD IN VARIANTS COLLECTION 
+        //             // FIXME:  THE PROBLEM IN THIS CASE IS WHEN WE ARE PULLING CART RELATED VARIANTS VARIANTS ARE NOT SETTLING ALONG WITH THE QUANTITY
+        //             as: "added_items",
+        //         }
+        //     },
+        //     {
+        //         "$addFields" : {"items.item" : "$added_items"}
+        //     }
+        //     // {
+        //     //     "$project" : {
+        //     //         total : {
+        //     //             "$sum" : {
+        //     //                 "$multiply" : ["$items.quantity", "$items.item[0].original_price"]
+        //     //             }
+        //     //         }
+        //     //     }
+        //     // }
+        //     // { "$unwind": "$added_items" },
+        //     // {
+        //     //     "$group": {
+        //     //         "_id": "$_id",
+        //     //         "totalOfVariants": { "$sum": { "$multiply": ["$added_items.original_price", "$items.quantity"] } }
+        //     //     }
+        //     // }
+        // ]).exec((err: any, data: any) => {
+        //     if (err) throw new ApplicationError(err.message);
+        //     console.log(data[0]);
+        //     // console.log(data);
+        //     // if (data.length === 0 || !data) throw new ApplicationError('Not found');
+        //     return res.send( data[0])
+        // })
+        const entity: any = await cart.findById(id).populate("items.item")
+        let total: number = 0;
+
+        let itemsTotal = entity.items.map((e: any) => {
+            return total = e.quantity * e.item.original_price
+        });
+        total = itemsTotal.reduce((p: any, c: any) => {
+            return p + c
+        })
+        res.send(total.toString())
     } catch (e) {
         next(e)
     }

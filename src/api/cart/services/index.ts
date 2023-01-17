@@ -5,11 +5,20 @@ import { Cart } from "../../../types/cart";
 import ApplicationError from "../../../utils/ApplicationError";
 
 export default {
-    async findOne(payload: Cart, populate?:boolean) {
-        if(populate===true){
-            return await cart.findOne(payload).populate(['customer', 'shipping_address', 'billing_address', 'region', 'items.item'])
+    getRelations():string[]{
+        return ['customer', 'shipping_address', 'billing_address', 'region', 'items.item']
+    },
+    async findOne(payload: Cart, populate?:string|Array<string>) {
+        
+        let entity;
+        if (populate) {
+            entity = await cart.findOne(payload).populate(populate);
+            if (!entity) throw new ApplicationError(`cart with ${Object.keys(payload)} : ${Object.values(payload)}  not found`);
+            return entity
         }
-        return await cart.findOne(payload);
+        entity = await cart.findOne(payload);
+        if (!entity) throw new ApplicationError(`cart with ${Object.keys(payload)} : ${Object.values(payload)}  not found`);
+        return entity
     },
     create(payload?: Cart) {
         return new cart(payload)
@@ -17,23 +26,22 @@ export default {
     async save(payload?: Cart) {
         return await cart.create(payload)
     },
-    async updateWithId(_id: Types.ObjectId | string, payload: Cart) {
+    async updateWithId(_id: Types.ObjectId | string|any, payload: Cart) {
         return await cart.findByIdAndUpdate(_id, payload, { new: true }).populate(['customer', 'shipping_address', 'billing_address', 'region', 'items'])
     },
     async find(payload: Cart) {
         return await cart.find(payload).populate(['customer', 'shipping_address', 'billing_address', 'region'])
     },
-    async validateCart(id: string | Types.ObjectId, populate?: boolean) {
-        let isCart;
+    async validateCart(id: string | Types.ObjectId, populate?: string|Array<string>) {
+        let entity;
         if (populate) {
-            isCart = await cart.findOne({ _id: id }).populate(['customer', 'shipping_address', 'billing_address', 'region'])
-        } else {
-            isCart = await cart.findOne({ _id: id })
+            entity = await cart.findById(id).populate(populate);
+            if (!entity) throw new ApplicationError(`cart with id : ${id}  not found`);
+            return entity
         }
-        if (!isCart) {
-            throw new ApplicationError(`cart with ${id} Not Found`)
-        }
-        return isCart
+        entity = await cart.findById(id);
+        if (!entity) throw new ApplicationError(`cart with id : ${id}  not found`);
+        return entity
     },
     // HERE WE ARE VALIDATING IF THE LINE_ID WHICH REFERES TO THE CART.ITEMS LINE ID IS EXISTS OR NOT 
     async validateLineId(cart_id:string, line_id:string){
@@ -91,24 +99,35 @@ export default {
         await cart.updateOne({_id:cart_id, "items._id":line_id}, {$pull:{items:{_id:line_id}}})
     },
     async ensureCartTotal(_id:string|Types.ObjectId){
-        let entity:any = await cart.findById(_id).populate('items.item')
-        let itemsWithTotal = this.createTotalForItems(entity.items)
-        // console.log(itemsWithTotal);
-        // console.log(itemsWithTotal);
+        // let entity:any = await cart.findById(_id).populate('items.item')
+        // let itemsWithTotal = this.createTotalForItems(entity.items)
+        // // console.log(itemsWithTotal);
+        // // console.log(itemsWithTotal);
         
-        let grandTotal = itemsWithTotal?.reduce((prev:any, curr:any)=>{
-            // console.log(prev);
-            return  prev.total+ curr.total
-        });
-        // console.log(entity.items);
-        console.log(grandTotal);
-        
-        // let  updated = await cart.findByIdAndUpdate(_id, {
-        //     total : grandTotal
+        // let grandTotal = itemsWithTotal?.reduce((prev:any, curr:any)=>{
+        //     // console.log(prev);
+        //     return  prev.total+ curr.total
         // });
-        // if(!updated){
-        //     throw new ApplicationError(`error on line 103 of ${path.join(__filename, '.')}`)
-        // }
+        // // console.log(entity.items);
+        // console.log(grandTotal);
+        const entity:any = await cart.findById(_id).populate("items.item")
+        let total:number = 0;
+
+        let itemsTotal = entity.items.map((e:any)=>{
+            return total = e.quantity * e.item.original_price
+        });
+        total = itemsTotal.reduce((p:any,c:any)=>{
+            return p+c
+        })
+        // console.log(total);
+        
+        
+        let  updated = await cart.findByIdAndUpdate(_id, {
+            total 
+        });
+        if(!updated){
+            throw new ApplicationError(`error on line 103 of ${path.join(__filename, '.')}`)
+        }
     },
     createTotalForItems(items?:[]|any){
         let newItems =  items?.map((item:any)=>{

@@ -1,6 +1,7 @@
 import { Types } from "mongoose";
 import { Billing_Address } from "./billing_address";
 import { Customer } from "./customer";
+import { Variant } from "./product/variant";
 import { Shipping_Address } from "./shipping_address";
 
 export type Cart = {
@@ -8,7 +9,7 @@ export type Cart = {
     email?: string,
     billing_address?: Types.ObjectId|string,
     shipping_address?: Types.ObjectId|string,
-    items?: Array<[any]>,
+    items?: Array<[Variant]>,
     discounts?: Array<[]>,
     customer_id?: string,
     customer?: Customer,

@@ -15,7 +15,6 @@ export default {
     //             return cart
     //     }
     // },
-
     generateUUID(length: number, start: string) {
         var result = '';
         var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -24,5 +23,5 @@ export default {
             result += characters.charAt(Math.floor(Math.random() * charactersLength));
         }
         return start + result;
-    }
+    },
 }

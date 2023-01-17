@@ -100,7 +100,7 @@ export default {
             return res.status(500).send('internal server error')
         }
     },
-    async find(req: Request, res: Response,next:NextFunction) {
+    async find(req: Request, res: Response, next: NextFunction) {
         try {
             const { query } = req;
             return res.send(await services.find(query))
@@ -108,8 +108,13 @@ export default {
             next(e)
         }
     },
-    findOne(req: Request, res: Response) {
-        res.send(req.path)
+    async findOne(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { id } = req.params;
+            return res.send(await services.findOne({ _id: id }, "variants"))
+        } catch (e) {
+            next(e)
+        }
     },
     delete(req: Request, res: Response) {
         res.send(req.path)

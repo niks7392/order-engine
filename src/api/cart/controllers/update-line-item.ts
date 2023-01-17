@@ -23,7 +23,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
         // TODO ENSURE CART PRICES WITH UPDATION
         await services.ensureCartTotal(id)
-        res.send(await services.findOne({ _id: id }, true))
+        res.send(await services.findOne({ _id: id }, services.getRelations()))
     } catch (e) {
         next(e)
     }

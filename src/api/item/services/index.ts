@@ -10,8 +10,16 @@ export default {
     async save(payload: Item) {
         return await item.create(payload)
     },
-    async findOne(payload: Item) {
-        return await item.findOne(payload)
+    async findOne(payload: Item, populate?: string | Array<string>) {
+        let entity;
+        if (populate) {
+            entity = await item.findOne(payload).populate(populate)
+            if (!entity) throw new ApplicationError(`item with ${Object.keys(payload)}: ${Object.values(payload)} not found`)
+            return entity
+        }
+        entity = await item.findOne(payload)
+        if (!entity) throw new ApplicationError(`item with ${Object.keys(payload)}: ${Object.values(payload)} not found`)
+        return  entity
     },
     async updateWithId(_id: Types.ObjectId | string, payload: Item) {
         return await item.findOneAndUpdate({ _id }, payload, { new: true })
@@ -28,8 +36,8 @@ export default {
     },
 
     // TODO:  VARIANT SHOULDNT GET PUSHED LIKE THIS NOT A PROPER WAY USE MODEL.UPDATEONE
-    async pushVariant(_id:  Types.ObjectId|string, variant: string|Types.ObjectId) {
-        return await  item.findOne({ _id }, async (err: CallbackError, document: any) => {
+    async pushVariant(_id: Types.ObjectId | string, variant: string | Types.ObjectId) {
+        return await item.findOne({ _id }, async (err: CallbackError, document: any) => {
             if (err) {
                 throw new ApplicationError(err.message);
             }
