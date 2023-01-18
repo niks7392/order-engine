@@ -38,7 +38,7 @@ const orderSchema = new Schema({
     // shipping_address: Shipping_Address | Types.ObjectId
     shipping_address: {
         type: Types.ObjectId,
-        ref: 'shipping_adddress'
+        ref: 'shipping_address'
     },
     // region: Region | Types.ObjectId
     region: {

@@ -3,6 +3,7 @@ import mongoose, { Schema } from "mongoose";
 const cartSchema: Schema = new mongoose.Schema({
     email: {
         type: String,
+        lowercase:true
     },
     region: {
         type: Schema.Types.ObjectId,

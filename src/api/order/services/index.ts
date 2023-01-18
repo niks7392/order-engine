@@ -4,6 +4,9 @@ import { Order } from "../../../types/order";
 import ApplicationError from "../../../utils/ApplicationError";
 
 export default {
+    getrelations() {
+        return ['cart', 'region', 'customer', 'shipping_address', 'billing_address']
+    },
     create(payload: Order) {
         return new order(payload);
     },
@@ -35,9 +38,22 @@ export default {
         }
         return isOrder
     },
-    async getByCartId(cart_id:string|Types.ObjectId){
-        return await order.findOne({cart : cart_id});
+    async getByCartId(cart_id: string | Types.ObjectId, populate?: string | Array<string>) {
+        let entity;
+        if (populate) {
+            entity = await order.findOne({ cart: cart_id }).populate({
+                path : 'cart',
+                populate : {
+                    path : 'items.item'
+                }
+            })
+            // if (!entity) throw new ApplicationError(`order with cart_id : ${cart_id} not found`)
+            return entity
+        }
+        entity = await order.findOne({ cart: cart_id });
+        // if (!entity) throw new ApplicationError(`order with cart_id : ${cart_id} not found`)
+        return entity
     },
-    async createFromCart(cart_id : string|Types.ObjectId){
+    async createFromCart(cart_id: string | Types.ObjectId) {
     }
 }

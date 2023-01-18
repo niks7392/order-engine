@@ -35,11 +35,11 @@ export default {
     async validateCart(id: string | Types.ObjectId, populate?: string|Array<string>) {
         let entity;
         if (populate) {
-            entity = await cart.findById(id).populate(populate);
+            entity = await cart.findById(id).populate(populate)
             if (!entity) throw new ApplicationError(`cart with id : ${id}  not found`);
             return entity
         }
-        entity = await cart.findById(id);
+        entity = await cart.findById(id)
         if (!entity) throw new ApplicationError(`cart with id : ${id}  not found`);
         return entity
     },
@@ -54,42 +54,30 @@ export default {
     // THIS FUNCTION HERE SHOULD ADD VARIANT AND IF EXISTS THEN ADD IT IN PREVIOUS VALUE
     async pushVariantInCart(cart_id: string, variant_id: string, quantity: number) {
         // FIND CART WITH SAME VARIANT IN IT IF EXISTS UPDATE THE QUANTITY ELSE CREATE AND ADD THE QUANTITY
-        let cartWithVariantExists = await cart.findOne({ _id: cart_id, "items.item": variant_id }, async (err: MongooseError, doc: any) => {
-            if (err) {
-                throw new ApplicationError(err.message);
-            }
-            // doc.items[0].quantity=quantity
-            // console.log(doc);
-            // doc.items.forEach((i: any) => i.item.item === variant_id)
-            // doc.isNew = true
-
-            // await doc.save()
-
-        }).clone()
-            .catch((e: MongooseError) => { throw new ApplicationError(e.message) });
+        let cartWithVariantExists = await cart.findOne({ _id: cart_id, "items.item": variant_id })
             if(cartWithVariantExists){
                 await cart.updateOne({_id:cart_id, "items.item":variant_id}, {$inc:{"items.$.quantity":quantity}}).exec()
             }
 
         if (!cartWithVariantExists) {
             if(quantity<=0)throw new ApplicationError(`line item is not exists since null or negative values are not allowed when newly adding items`)
-            return await cart.findOne({ _id: cart_id }, async (err: MongooseError, doc: any) => {
-                if (err) {
-                    throw new ApplicationError(err.message);
-                }
-                // console.log(doc);
+            // return await cart.findOne({ _id: cart_id }, async (err: MongooseError, doc: any) => {
+            //     if (err) {
+            //         throw new ApplicationError(err.message);
+            //     }
+            //     // console.log(doc);
 
-                doc.items.push({ item: variant_id, quantity })
-                // console.log(doc);
-                // doc.isNew = true
-                await doc.save()
-            }).clone()
-                .catch((e: MongooseError) => { throw new ApplicationError(e.message) });
+            //     doc.items.push({ item: variant_id, quantity })
+            //     // console.log(doc);
+            //     // doc.isNew = true
+            //     await doc.save()
+            // }).clone()
+            //     .catch((e: MongooseError) => { throw new ApplicationError(e.message) });
+            return cart.updateOne(
+                { _id: cart_id },
+                { $push: { items: {item : variant_id, quantity} } }
+             )
                     }
-        // else{
-        //      await cart.updateOne({_id:cart_id}, {$push:{items : {item : variant_id, quantity}}});
-        //      return await this.findOne({_id:cart_id}, true)
-        // }
         return cartWithVariantExists
     },
     async updateVariantInCart(cart_id:string|Types.ObjectId, line_id:string|Types.ObjectId, quantity:number){
@@ -110,20 +98,24 @@ export default {
         // });
         // // console.log(entity.items);
         // console.log(grandTotal);
-        const entity:any = await cart.findById(_id).populate("items.item")
-        let total:number = 0;
+        const entity:any = await cart.findById(_id).populate("items.item");
 
-        let itemsTotal = entity.items.map((e:any)=>{
-            return total = e.quantity * e.item.original_price
-        });
-        total = itemsTotal.reduce((p:any,c:any)=>{
-            return p+c
-        })
-        // console.log(total);
+        // console.log(entity && entity.items && entity.items.length !==0);
+        // console.log(entity.items);
         
         
+        let total:number = 0;
+        if(entity && entity.items && entity.items.length !==0){
+    
+            let itemsTotal = entity.items.map((e:any)=>{
+                return total = e.quantity * e.item.original_price
+            });
+            total = itemsTotal.reduce((p:any,c:any)=>{
+                return p+c
+            });
+        }
         let  updated = await cart.findByIdAndUpdate(_id, {
-            total 
+            total
         });
         if(!updated){
             throw new ApplicationError(`error on line 103 of ${path.join(__filename, '.')}`)

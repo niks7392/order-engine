@@ -6,7 +6,8 @@ const customerShema = new mongoose.Schema({
     // "email": "user@example.com",
     email: {
         type: String,
-        unique: true
+        unique: true,
+        lowercase : true
     },
     // "first_name": "Arno",
     first_name: {

@@ -2,10 +2,15 @@
 
 Applictatioon Authenctication Modules:
     Customer:
-        ☐ Create Authenctication for customer (sha-256)
+        ☐ Create Authenctication for customer (sha-256 recommended)
 
     Admin:
-        ☐ Create Authenctication for admin(sha-256)
+        ☐ Create Authenctication for admin(sha-256 recommended)
+
+
+
+Global Fixes:
+    ☐ replace every mongoose query that is cloning the request finOne(findig and updating some data in cb function)clone() with updateOne @critical 
 
 
 Applictatioon Modules:
@@ -28,13 +33,23 @@ Applictatioon Modules:
         ✔ delete-line-item @done (1/15/2023, 12:19:24 PM)
             fixes:
                  ✔ calculate total of each items in any  requests that are updating  the cart @critical @done (1/17/2023, 3:35:15 PM)
-                 ☐ calculate the total from mongoose aggregate pipeline @critical 
+                 ☐ calculate the total from mongoose aggregate pipeline @critical
+        ✔ complete-cart @done (1/17/2023, 5:31:41 PM)
+                ✔ once cart completed and order created that cart marked as completed and cannot create order with the same cart @done (1/18/2023, 11:33:38 AM)
 
 
 
     Customer:
 
     Product:
+
+    Order:
+        ✔ create-order-from-cart @done (1/18/2023, 4:02:31 PM)
+            fixes:
+                ☐ 
+        ✔ get-order-by-cart @done (1/18/2023, 4:02:53 PM)
+                ☐ get completed carts items means populate relations relational data mongodb @low 
+
 
     Discounts:
 

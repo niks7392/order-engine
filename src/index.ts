@@ -1,5 +1,7 @@
 import express, { Application, NextFunction, Request, Response } from 'express';
 import { config } from 'dotenv';
+import cors from 'cors';
+import morgan from 'morgan';
 import database from './config/database';
 import cartRoutes from './api/cart/routes'
 import customerRoutes from './api/customer/routes'
@@ -25,7 +27,10 @@ database({ env: process.env });
 //         await cart.deleteOne({email : 'admin@admsin.com'})
 //     }
 // )()
-
+app.use(cors({
+    origin: process.env.CORS_ORIGIN || 'http://localhost:3000'
+}));
+app.use(morgan('combined'))
 app.use('/api/cart', cartRoutes);
 app.use('/api/customer', customerRoutes);
 app.use('/api/shipping_address', shippingRoutes);
